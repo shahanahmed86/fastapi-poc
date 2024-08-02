@@ -1,7 +1,7 @@
 import pytest
 from fastapi import HTTPException, status
 from .utils import test_user, TestingSessionLocal
-from ..routers.helper import (
+from routers.helper import (
     authenticate_user,
     create_access_token,
     get_current_user,

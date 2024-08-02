@@ -1,10 +1,10 @@
 from fastapi import status
-from ..models import Todos
+from models import Todos
 from .utils import test_todo, client, TestingSessionLocal
 
 
 def test_read_all_todos(test_todo):
-    response = client.get("/todos")
+    response = client.get("/api/todos")
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == [
         {
@@ -19,7 +19,7 @@ def test_read_all_todos(test_todo):
 
 
 def test_read_todo_by_id(test_todo):
-    response = client.get("/todos/1")
+    response = client.get("/api/todos/1")
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
         "id": 1,
@@ -32,7 +32,7 @@ def test_read_todo_by_id(test_todo):
 
 
 def test_read_todo_by_id_not_found(test_todo):
-    response = client.get("/todos/999")
+    response = client.get("/api/todos/999")
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "Todo not found!"}
 
@@ -45,7 +45,7 @@ def test_create_todo(test_todo):
         "complete": False,
     }
 
-    response = client.post("/todos", json=request_data)
+    response = client.post("/api/todos", json=request_data)
     assert response.status_code == status.HTTP_201_CREATED
 
     db = TestingSessionLocal()
@@ -67,7 +67,7 @@ def test_update_todo(test_todo):
         "complete": True,
     }
 
-    response = client.put("/todos/1", json=request_data)
+    response = client.put("/api/todos/1", json=request_data)
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
     db = TestingSessionLocal()
@@ -87,13 +87,13 @@ def test_update_todo_not_found(test_todo):
         "complete": True,
     }
 
-    response = client.put("/todos/999", json=request_data)
+    response = client.put("/api/todos/999", json=request_data)
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "Todo not found!"}
 
 
 def test_delete_todo(test_todo):
-    response = client.delete("/todos/1")
+    response = client.delete("/api/todos/1")
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
     db = TestingSessionLocal()
@@ -103,6 +103,6 @@ def test_delete_todo(test_todo):
 
 
 def test_delete_todo_not_found():
-    response = client.delete("/todos/999")
+    response = client.delete("/api/todos/999")
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "Todo not found!"}

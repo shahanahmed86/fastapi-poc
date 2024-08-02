@@ -1,11 +1,11 @@
 from fastapi import status
-from ..models import Users
+from models import Users
 from .utils import client, test_user, TestingSessionLocal
-from ..routers.helper import bcrypt_context
+from routers.helper import bcrypt_context
 
 
 def test_get_current_user(test_user):
-    response = client.get("/users/logged-in")
+    response = client.get("/api/users/logged-in")
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["username"] == "shahanahmed86"
     assert response.json()["email"] == "developer.shahan@gmail.com"
@@ -18,7 +18,7 @@ def test_get_current_user(test_user):
 
 def test_admin_change_password_success(test_user):
     request_data = {"old_password": "test1234", "new_password": "test1234!"}
-    response = client.put("/users/change-password", json=request_data)
+    response = client.put("/api/users/change-password", json=request_data)
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
     db = TestingSessionLocal()
@@ -28,14 +28,14 @@ def test_admin_change_password_success(test_user):
 
 def test_admin_change_password_failed(test_user):
     request_data = {"old_password": "test1234!", "new_password": "test1234"}
-    response = client.put("/users/change-password", json=request_data)
+    response = client.put("/api/users/change-password", json=request_data)
     assert response.status_code == status.HTTP_409_CONFLICT
     assert response.json() == {"detail": "Old password mismatched"}
 
 
 def test_admin_phone_number_success(test_user):
     request_data = {"phone_number": "+923131126908"}
-    response = client.put("/users/phone-number", json=request_data)
+    response = client.put("/api/users/phone-number", json=request_data)
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
     db = TestingSessionLocal()

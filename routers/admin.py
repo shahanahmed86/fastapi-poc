@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Path
 from starlette import status
-from ..models import Todos
+from models import Todos
 from .helper import db_dependency, user_dependency
 
 router = APIRouter()

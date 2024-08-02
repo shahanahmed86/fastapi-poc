@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from starlette import status
-from ..models import Users
+from models import Users
 from .helper import (
     authenticate_user,
     db_dependency,

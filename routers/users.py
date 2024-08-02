@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from starlette import status
 from fastapi import APIRouter, HTTPException
-from ..models import Users
+from models import Users
 from .helper import db_dependency, user_dependency, bcrypt_context
 
 router = APIRouter()

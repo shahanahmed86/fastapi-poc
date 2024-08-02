@@ -1,13 +1,14 @@
 from datetime import datetime, timedelta, timezone
-from typing import Annotated
+from typing import Annotated, Optional
 from starlette import status
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from ..database import SessionLocal
-from jose import jwt, JWTError
+from fastapi.templating import Jinja2Templates
+from database import SessionLocal
+from jose import jwt
 from passlib.context import CryptContext
-from ..models import Users
+from models import Users
 
 
 def get_db():
@@ -22,7 +23,7 @@ SECRET_KEY = "rEEC6iWOFDfaGKrIido5oM1FqKkBE67Y+sYGQ+R1P9A1/b8qWEGGarg1xBLs35NIJS
 ALGORITHM = "HS256"
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_bearer = OAuth2PasswordBearer(tokenUrl="auth/token")
+oauth2_bearer = OAuth2PasswordBearer(tokenUrl="api/auth/token")
 
 
 def authenticate_user(username: str, password: str, db):
@@ -53,16 +54,17 @@ def create_access_token(
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    username: str = payload.get("sub")
-    user_id: int = payload.get("id")
-    role: int = payload.get("role")
+    username: Optional[str] = payload.get("sub")
+    user_id: Optional[int] = payload.get("id")
+    role: Optional[int] = payload.get("role")
 
     if username is None or user_id is None or role is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Couldn't validate user."
-        )
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Couldn't validate user.")
 
     return {"id": user_id, "username": username, "role": role}
+
+
+templates = Jinja2Templates(directory="templates")
 
 
 db_dependency = Annotated[Session, Depends(get_db)]

@@ -1,10 +1,10 @@
 from fastapi import status
-from ..models import Todos
+from models import Todos
 from .utils import client, test_todo, TestingSessionLocal
 
 
 def test_admin_get_all_todos(test_todo):
-    response = client.get("/admin/todos")
+    response = client.get("/api/admin/todos")
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == [
         {
@@ -19,7 +19,7 @@ def test_admin_get_all_todos(test_todo):
 
 
 def test_admin_delete_todo(test_todo):
-    response = client.delete("/admin/todos/1")
+    response = client.delete("/api/admin/todos/1")
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
     db = TestingSessionLocal()
@@ -29,6 +29,6 @@ def test_admin_delete_todo(test_todo):
 
 
 def test_admin_delete_todo_not_found(test_todo):
-    response = client.delete("/admin/todos/999")
+    response = client.delete("/api/admin/todos/999")
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "Todo not found!"}
